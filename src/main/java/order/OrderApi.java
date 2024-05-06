@@ -3,7 +3,6 @@ package order;
 import static constants.Data.*;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
-import order.Order;
 
 public class OrderApi {
 
@@ -16,11 +15,15 @@ public class OrderApi {
                 .post(ORDERS);
     }
 
-    @Step("Get ingredients")
-    public Response getIngredients() {
+    @Step("Get ingredient's data")
+    public static Ingredients getIngredient() {
         return getSpec()
-                .get(INGREDIENTS);
+                .when()
+                .get(INGREDIENTS)
+                .body()
+                .as(Ingredients.class);
     }
+
 
     @Step("Create order without token")
     public static Response createOrderWithoutAuthorized(Order order) {

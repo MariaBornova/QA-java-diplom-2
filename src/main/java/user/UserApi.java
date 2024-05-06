@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 
 public class UserApi {
     public static User createNewUser() {
-        return new User(UserData.CreateNewUser().getEmail(), UserData.CreateNewUser().getPassword(), UserData.CreateNewUser().getName());
+        return new User(UserData.createNewUser().getEmail(), UserData.createNewUser().getPassword(), UserData.createNewUser().getName());
     }
 
     @Step("User create")

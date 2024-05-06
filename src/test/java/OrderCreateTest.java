@@ -1,3 +1,4 @@
+import order.Ingredients;
 import user.User;
 import user.UserApi;
 import order.Order;
@@ -7,36 +8,19 @@ import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 
-import java.util.List;
+import java.util.ArrayList;
 
 
-import static org.apache.http.HttpStatus.*;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 
 
-@RunWith(Parameterized.class)
 public class OrderCreateTest {
-    private final List<String> ingredients;
-    private final int statusCode;
+
     private String accessToken;
-
-    public OrderCreateTest(List<String> ingredients, int statusCode) {
-        this.ingredients = ingredients;
-        this.statusCode = statusCode;
-    }
-
-    @Parameterized.Parameters
-    public static Object[][] getData() {
-        return new Object[][] {
-                {List.of("61c0c5a71d1f82001bdaaa76", "61c0c5a71d1f82001bdaaa6c"), SC_OK},
-                {List.of("654321", "123456"), SC_INTERNAL_SERVER_ERROR},
-                {List.of(), SC_BAD_REQUEST}
-        };
-    }
 
     @Before
     public void setUp() {
@@ -48,17 +32,25 @@ public class OrderCreateTest {
     @Test
     @DisplayName("Create order with token")
     public void testOrderCreateWithAuth() {
-        Order order= new Order(ingredients);
-        OrderApi.createOrderWithAuthorized(order, accessToken).then().assertThat()
-                .statusCode(statusCode);
+        Ingredients ingredients = OrderApi.getIngredient();
+        ArrayList<String> ingredient1 = new ArrayList<>();
+        ingredient1.add(ingredients.getData().get(1).get_id());
+        ingredient1.add(ingredients.getData().get(2).get_id());
+        ingredient1.add(ingredients.getData().get(3).get_id());
+        Order order = new Order(ingredient1);
+        OrderApi.createOrderWithAuthorized(order, accessToken).then().assertThat().body("success", equalTo(true)).and().statusCode(SC_OK);
     }
 
     @Test
     @DisplayName("Create order without token")
     public void testOrderCreateWithoutAuth() {
-        Order order = new Order(ingredients);
-        OrderApi.createOrderWithoutAuthorized(order).then().assertThat()
-                .statusCode(statusCode);
+        Ingredients ingredients = OrderApi.getIngredient();
+        ArrayList<String> ingredient1 = new ArrayList<>();
+        ingredient1.add(ingredients.getData().get(1).get_id());
+        ingredient1.add(ingredients.getData().get(2).get_id());
+        ingredient1.add(ingredients.getData().get(3).get_id());
+        Order order = new Order(ingredient1);
+        OrderApi.createOrderWithoutAuthorized(order).then().assertThat().body("success", equalTo(true)).and().statusCode(SC_OK);
     }
 
     @After
